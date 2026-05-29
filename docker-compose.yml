@@ -10,5 +10,20 @@ services:
     volumes:
       - ring-data:/app/data
 
+  # Run once interactively to authenticate:
+  #   docker compose run --rm ring-setup
+  ring-setup:
+    build: .
+    container_name: maxihome-ring-setup
+    entrypoint: ["python", "-m", "ring_collector.setup"]
+    stdin_open: true
+    tty: true
+    env_file:
+      - .env
+    volumes:
+      - ring-data:/app/data
+    profiles:
+      - setup
+
 volumes:
   ring-data:

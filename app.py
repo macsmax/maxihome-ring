@@ -18,13 +18,21 @@ st.set_page_config(
     layout="wide",
 )
 
-# Start background collector
-start_scheduler()
-
 st.title("Ring Camera Battery Monitor")
 
 DATA_DIR = Path(os.getenv("RING_DATA_DIR", "data"))
 DEVICES = [d.strip() for d in os.getenv("RING_DEVICES", "Front Door,Garden Cam").split(",")]
+
+# Check for auth token before starting collector
+TOKEN_PATH = DATA_DIR / "ring_token.cache"
+if not TOKEN_PATH.is_file():
+    st.error("**Ring not authenticated.** Run the setup to authenticate:")
+    st.code("docker compose run --rm ring-setup", language="bash")
+    st.info("This will prompt for your Ring email, password, and 2FA code. Only needed once — the token is cached.")
+    st.stop()
+
+# Start background collector (only if authenticated)
+start_scheduler()
 
 
 def load_device_data(device_name: str) -> pd.DataFrame:
