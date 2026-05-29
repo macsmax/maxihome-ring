@@ -46,9 +46,13 @@ def load_device_data(device_name: str) -> pd.DataFrame:
         csv_path,
         header=None,
         names=["timestamp", "ac_power", "battery_pct"],
+        on_bad_lines="skip",
     )
+    df = df.dropna(subset=["timestamp", "battery_pct"])
     df["timestamp"] = pd.to_datetime(df["timestamp"], format="mixed", dayfirst=False, errors="coerce", utc=True)
-    df = df.dropna(subset=["timestamp"])
+    df["battery_pct"] = pd.to_numeric(df["battery_pct"], errors="coerce")
+    df["ac_power"] = pd.to_numeric(df["ac_power"], errors="coerce").fillna(0).astype(int)
+    df = df.dropna(subset=["timestamp", "battery_pct"])
     df["timestamp"] = df["timestamp"].dt.tz_localize(None)
     df = df.sort_values("timestamp").reset_index(drop=True)
     return df
@@ -67,7 +71,7 @@ def normalize_ac_power(ac_power: int) -> int:
 # Sidebar
 with st.sidebar:
     st.header("Settings")
-    days_back = st.slider("Days to show", min_value=1, max_value=90, value=30)
+    days_back = st.slider("Days to show", min_value=1, max_value=730, value=365)
     auto_refresh = st.checkbox("Auto-refresh (60s)", value=True)
     if auto_refresh:
         st.markdown("*Page refreshes every 60 seconds*")
