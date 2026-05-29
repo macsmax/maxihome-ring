@@ -47,8 +47,9 @@ def load_device_data(device_name: str) -> pd.DataFrame:
         header=None,
         names=["timestamp", "ac_power", "battery_pct"],
     )
-    df["timestamp"] = pd.to_datetime(df["timestamp"], format="mixed", dayfirst=False, errors="coerce")
+    df["timestamp"] = pd.to_datetime(df["timestamp"], format="mixed", dayfirst=False, errors="coerce", utc=True)
     df = df.dropna(subset=["timestamp"])
+    df["timestamp"] = df["timestamp"].dt.tz_localize(None)
     df = df.sort_values("timestamp").reset_index(drop=True)
     return df
 
