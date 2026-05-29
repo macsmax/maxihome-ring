@@ -21,7 +21,7 @@ def token_updated(token: dict):
 
 
 async def get_ring_session() -> Ring:
-    user_agent = "maxihome-ring/1.0"
+    user_agent = "ring_doorbell/0.9"
 
     if TOKEN_CACHE.is_file():
         auth = Auth(user_agent, json.loads(TOKEN_CACHE.read_text()), token_updated)

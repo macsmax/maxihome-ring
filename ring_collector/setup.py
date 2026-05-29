@@ -27,7 +27,7 @@ async def verify_token() -> bool:
     if not TOKEN_CACHE.is_file():
         return False
     try:
-        auth = Auth("maxihome-ring/1.0", json.loads(TOKEN_CACHE.read_text()), token_updated)
+        auth = Auth("ring_doorbell/0.9", json.loads(TOKEN_CACHE.read_text()), token_updated)
         ring = Ring(auth)
         await ring.async_create_session()
         await auth.async_close()
@@ -38,7 +38,7 @@ async def verify_token() -> bool:
 
 async def authenticate():
     """Interactive authentication flow."""
-    user_agent = "maxihome-ring/1.0"
+    user_agent = "ring_doorbell/0.9"
 
     print("=" * 50)
     print("  Ring Camera Authentication Setup")
