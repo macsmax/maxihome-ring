@@ -62,11 +62,7 @@ async def authenticate():
     await ring.async_update_data()
 
     devices = ring.devices()
-    all_devices = (
-        devices.get("doorbots", [])
-        + devices.get("authorized_doorbots", [])
-        + devices.get("stickup_cams", [])
-    )
+    all_devices = list(devices.doorbots) + list(devices.stickup_cams) + list(devices.chimes)
 
     print()
     print("Authenticated successfully!")
@@ -74,7 +70,7 @@ async def authenticate():
     print()
     print("Devices found:")
     for d in all_devices:
-        battery = d.battery_life
+        battery = getattr(d, "battery_life", None)
         print(f"  - {d.name} (battery: {battery}%)")
 
     await auth.async_close()

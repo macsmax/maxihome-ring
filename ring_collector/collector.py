@@ -52,11 +52,7 @@ async def collect_once():
     await ring.async_update_data()
 
     devices = ring.devices()
-    all_devices = (
-        devices.get("doorbots", [])
-        + devices.get("authorized_doorbots", [])
-        + devices.get("stickup_cams", [])
-    )
+    all_devices = list(devices.doorbots) + list(devices.stickup_cams)
 
     target_names = [
         n.strip()
