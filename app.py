@@ -38,8 +38,9 @@ def load_device_data(device_name: str) -> pd.DataFrame:
         csv_path,
         header=None,
         names=["timestamp", "ac_power", "battery_pct"],
-        parse_dates=["timestamp"],
     )
+    df["timestamp"] = pd.to_datetime(df["timestamp"], format="mixed", dayfirst=False)
+    df = df.dropna(subset=["timestamp"])
     df = df.sort_values("timestamp").reset_index(drop=True)
     return df
 
@@ -71,7 +72,7 @@ if auto_refresh:
         unsafe_allow_html=True,
     )
 
-cutoff = datetime.now() - timedelta(days=days_back)
+cutoff = pd.Timestamp.now() - timedelta(days=days_back)
 
 # Overview metrics
 cols = st.columns(len(DEVICES))
@@ -101,7 +102,7 @@ for i, device_name in enumerate(DEVICES):
         power_status = "⚡ Wired" if ac > 0 else "🔋 Battery"
 
         # Calculate drain rate (last 24h)
-        recent = df[df["timestamp"] > datetime.now() - timedelta(hours=24)]
+        recent = df[df["timestamp"] > pd.Timestamp.now() - timedelta(hours=24)]
         if len(recent) > 1:
             drain = recent.iloc[0]["battery_pct"] - recent.iloc[-1]["battery_pct"]
             delta_str = f"{drain:+.0f}% / 24h"
