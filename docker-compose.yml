@@ -1,0 +1,14 @@
+services:
+  ring:
+    build: .
+    container_name: maxihome-ring
+    restart: unless-stopped
+    ports:
+      - "8502:8502"
+    env_file:
+      - .env
+    volumes:
+      - ring-data:/app/data
+
+volumes:
+  ring-data:
